@@ -76,6 +76,8 @@ def svm_cross_validation(train):
         print(para, val)
     clf = SklearnClassifier(SVC(kernel='rbf', C=best_parameters['C'], gamma=best_parameters['gamma'], probability=True))
     clf.train(train)
+    clf.classify()
+    clf.prob_classify()
     return clf
 
 
@@ -109,13 +111,13 @@ def read_fasttext_data(data_file):
 
 
 if __name__ == '__main__':
-    data_file = '/data/code/github/machine_learn_msw/text_classify/fasttext/python_interface/train.csv'
+    data_file = r'C:\Users\ma787\machine_learn_msw\text_classify\fasttext\scikit-learn\train.csv'
     thresh = 0.5
     model_save_file = None
     model_save = {}
 
     #test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'SVM', 'SVMCV', 'GBDT']
-    test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'SVM', 'GBDT']
+    test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT']
     classifiers = {'NB': naive_bayes_classifier,
                    'KNN': knn_classifier,
                    'LR': logistic_regression_classifier,
@@ -144,6 +146,100 @@ if __name__ == '__main__':
         #print('precision: %.2f%%, recall: %.2f%%' % (100 * precision, 100 * recall))
         accuracy = metrics.accuracy_score(test_y, predict)
         print('accuracy: %.2f%%' % (100 * accuracy))
+        model_save[classifier] = model
 
     if model_save_file != None:
         pickle.dump(model_save, open(model_save_file, 'wb'))
+
+    desc = {'5': True,
+   '。': True,
+   '不': True,
+   '了': True,
+   '元': True,
+   '充值卡': True,
+   '去取': True,
+   '商家': True,
+   '安抚': True,
+   '家': True,
+   '没有': True,
+   '然后': True,
+   '用户': True,
+   '米饭': True,
+   '给配': True,
+   '自己': True,
+   '致歉': True,
+   '表示': True,
+   '认可': True,
+   '让': True,
+   '送到': True,
+   '送餐': True,
+   '需要': True,
+   '骑手': True,
+   '，': True}
+
+    desc1 = {'不': True,
+ '之前': True,
+ '了': True,
+ '但是': True,
+ '可以': True,
+ '恢复': True,
+ '支付宝': True,
+ '显示': True,
+ '现在': True,
+ '用': True,
+ '都': True,
+ '，': True}
+
+    desc2 = {' ': True,
+ '-': True,
+ '09': True,
+ '11': True,
+ '19': True,
+ '19.00': True,
+ '2017': True,
+ '26': True,
+ '58': True,
+ ':': True,
+ '一笔': True,
+ '两次': True,
+ '了': True,
+ '元': True,
+ '到': True,
+ '原': True,
+ '反馈': True,
+ '告知': True,
+ '在': True,
+ '外卖': True,
+ '已经': True,
+ '您': True,
+ '支付': True,
+ '支付方': True,
+ '查看': True,
+ '款项': True,
+ '用户': True,
+ '的': True,
+ '退回': True}
+
+    desc3 = {'一笔': True,
+ '两次': True,
+ '元': True,
+ '到': True,
+ '原': True,
+ '反馈': True,
+ '告知': True,
+ '在': True,
+ '外卖': True,
+ '已经': True,
+ '您': True,
+ '支付': True,
+ '支付方': True,
+ '查看': True,
+ '款项': True,
+ '用户': True,
+ '的': True,
+ '退回': True}
+
+    for name, model in model_save.items():
+        p1 = model.classify(desc3)
+        p2 = model.prob_classify(desc3)
+        print(p1, p2)
