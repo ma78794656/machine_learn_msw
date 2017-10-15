@@ -111,13 +111,13 @@ def read_fasttext_data(data_file):
 
 
 if __name__ == '__main__':
-    data_file = r'C:\Users\ma787\machine_learn_msw\text_classify\fasttext\scikit-learn\train.csv'
+    data_file = r'/data/code/github/machine_learn_msw/text_classify/fasttext/python_interface/train.csv'
     thresh = 0.5
-    model_save_file = None
+    model_save_file = r'/data/code/github/machine_learn_msw/text_classify/fasttext/scikit-learn/models'
     model_save = {}
 
     #test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'SVM', 'SVMCV', 'GBDT']
-    test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT']
+    test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'GBDT']
     classifiers = {'NB': naive_bayes_classifier,
                    'KNN': knn_classifier,
                    'LR': logistic_regression_classifier,
@@ -139,8 +139,8 @@ if __name__ == '__main__':
         model = classifiers[classifier](train)
         print('training took %fs!' % (time.time() - start_time))
         predict = model.classify_many(test_x)
-        if model_save_file != None:
-            model_save[classifier] = model
+        #if model_save_file != None:
+        #    model_save[classifier] = model
         #precision = metrics.precision_score(test_y, predict)
         #recall = metrics.recall_score(test_y, predict)
         #print('precision: %.2f%%, recall: %.2f%%' % (100 * precision, 100 * recall))

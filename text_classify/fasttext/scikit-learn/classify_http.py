@@ -3,6 +3,8 @@ from sanic.response import json
 import pickle
 import re
 import jieba
+import json as JSON
+from sanic import response
 
 app = Sanic()
 models = None
@@ -37,7 +39,12 @@ async def get_label(request):
 
 
 def result(code, message, data):
-    return json({'code':code, 'message':message, 'data':data})
+    return {'code':code, 'message':message, 'data':data}
+
+
+def jsonp_result(json_result, callback):
+    result_str = JSON.dumps(json_result)
+    return callback + "(" + result_str + ")"
 
 
 def parse_text(text):
@@ -79,12 +86,20 @@ async def classify(request):
     keys = request.args.keys()
     if 'text' not in keys:
         return result(1, 'there has no text', None)
+    callback = None
+    if 'callback' in keys:
+        callback = args['callback'][0]
+
     parsed_text = parse_text(args['text'][0])
     text_features = gen_feature(parsed_text)
     label_data = model_predict(text_features)
     #label_count = pred_res_count(label_data)
     #return result(0, 'success', {'label_data':label_data, 'label_count':label_count})
-    return result(0, 'success', {'text':args['text'][0], 'label_data':label_data})
+    result_map = result(0, 'success', {'text':args['text'][0], 'label_data': label_data})
+    if callback:
+        return response.text(jsonp_result(result_map, callback))
+    else:
+        return response.json(result_map)
 
 
 @app.route('/parse')
