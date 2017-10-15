@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>在线文本分析</title>
+    <script type='text/javascript' src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js">
+    </script>
+</head>
+
+
+<body>
+
+<br method="POST" action="bb.asp" name="userinfo" onsubmit="return CheckForm();">
+
+    <tr>  <td width="37%" align="right">输入在线文本：</td>  <td width="61%">     <input type="text" id="textname"  size="53">    </td> </tr>
+
+    <input type="button" value="Click Here" onclick="getValue();" />
+    <script type="text/javascript">
+        function getValue() {
+            var x = document.getElementById("textname");
+            alert(x.value);
+            $.ajax({
+                url: 'http://localhost:8000/classify',
+                dataType: 'jsonp',
+                method: 'GET',
+                data: {"text":"支付宝支付", "callback":"www"},
+                async: false,
+                success: function (data) {
+                    //alert(data);
+                    //alert("success");
+                    //alert(data.toJSONString());
+                    alert(JSON.stringify(data));
+                    var code = data["code"];
+                    var m = data["message"];
+                    var d = data["data"];
+                    var t = d["text"];
+                    var l = d["label_data"];
+                    var ls = l.toString();
+                    alert(code);
+                    alert(m);
+                    alert(d);
+                    alert(t);
+                    alert(l);
+                    alert(ls);
+                    //alert(text);
+                    //var label_data = data["data"]["label_data"].toJSONString();
+                    //for(var i in data) {
+                    //    alert(i+":"+data[i]);//循环输出a:1,b:2,etc.
+                    //}
+                },
+                error: function (xhr) {
+                    // 导致出错的原因较多，以后再研究
+                    alert('error:' + JSON.stringify(xhr));
+                }
+            })
+        }
+
+//            $.ajax({
+//                type:'GET',
+//                url:'http://192.168.1.6:8000/classify?a=aaa&b=bbb&text=支付宝支付',
+//                success:function (msg) {
+//                    alert(msg)
+//                    alert(msg.value)
+//                },
+//                error:function (msg) {
+//                    alert("error "+msg)
+//
+//                },
+//                complete: function (msg) {
+//                    alert(msg.responseText)
+//
+//                }
+//            })
+//        }
+
+    </script>
+    <br></br>
+<tr>  <td width="37%" align="right">问题类型：</td>  <td width="61%">     <input type="text" name="questionname"  size="13">    </td> </tr>
+
+
+</form>
+
+</body>
+</html>
