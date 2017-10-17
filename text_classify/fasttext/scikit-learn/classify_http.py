@@ -8,24 +8,28 @@ from sanic import response
 
 app = Sanic()
 models = None
-test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'GBDT']
-models_file = r'/data/code/github/machine_learn_msw/text_classify/fasttext/scikit-learn/models'
+test_classifiers = None
 digital_pat = None
 
-def get_models():
-    global models
-    if models:
-        return models
-    models = pickle.load(open(models_file, 'rb'))
-    return models
+
+def get_models(models_file):
+    return pickle.load(open(models_file, 'rb'))
 
 
 def get_pat():
+    return re.compile('\d+')
+
+
+@app.listener('after_server_start')
+async def notify_server_started(app, loop):
+    global models
+    global test_classifiers
     global digital_pat
-    if digital_pat:
-        return digital_pat
-    digital_pat = re.compile('\d+')
-    return digital_pat
+    models_file = r'/data/code/github/machine_learn_msw/text_classify/fasttext/scikit-learn/models'
+    models = get_models(models_file)
+    test_classifiers = ['NB', 'KNN', 'LR', 'RF', 'DT', 'GBDT']
+    digital_pat = get_pat()
+    print('Server successfully started!')
 
 
 @app.route("/")
@@ -48,7 +52,7 @@ def jsonp_result(json_result, callback):
 
 
 def parse_text(text):
-    text = re.sub(get_pat(), '', text)
+    text = re.sub(digital_pat, '', text)
     return text
 
 
@@ -60,11 +64,11 @@ def gen_feature(parsed_text):
 
 def model_predict(text_features):
     pred_res = {}
-    for name, model in get_models().items():
+    for name, model in models.items():
         print(name)
         p1 = model.classify(text_features)
         #p2 = model.prob_classify(test_classifiers)
-        print(p1)
+        print(name + ":" + p1)
         pred_res[name] = p1
 
     return pred_res
@@ -111,6 +115,14 @@ async def parse(request):
     res_map['url'] = request
     res_map['query_string'] = request.query_string
     return json(res_map)
+
+
+@app.route('/file')
+async def get_file(request):
+    if 'name' in request.args.keys():
+        return await response.file('/data/code/github/machine_learn_msw/text_classify/fasttext/scikit-learn/html_file.html')
+    else:
+        return response.json(result(1, 'error', None))
 
 
 @app.route("/query_string")
