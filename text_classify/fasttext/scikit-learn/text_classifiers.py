@@ -87,16 +87,14 @@ def gen_train_test_file(data, train_file, test_file, train_size):
         for info in train_data:
             text = ' '.join(info[0].keys())
             label = info[1]
-            if label.find('__') == -1:
-                label = "__" + label + "__"
+            label = "__label__" + str(label)
             f.write(label + "\t" + text + "\n")
 
     with open(test_file, 'w', encoding='utf-8') as f:
         for info in test_data:
             text = ' '.join(info[0].keys())
             label = info[1]
-            if label.find('__') == -1:
-                label = "__" + label + "__"
+            label = "__label__" + str(label)
             f.write(label + "\t" + text + "\n")
 
 

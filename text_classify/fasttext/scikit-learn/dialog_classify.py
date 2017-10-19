@@ -31,9 +31,22 @@ def cut_message(message):
     return word_list
 
 
-def parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"]):
+def parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"], quantize=False):
     id_info = {}
     dialog_data = pd.read_excel(file_name, sheetname=0, header=0, index_col=None)
+    # label 数值化处理
+    if quantize:
+        siji_categories = pd.Categorical(dialog_data['siji'])
+        dialog_data['siji'] = siji_categories.codes
+        categories_list = siji_categories.categories
+        ignore_categories = []
+        for i in range(0, len(categories_list)):
+            if categories_list[i] in ignore_question_types:
+                ignore_categories.append(i)
+        print(categories_list)
+    else:
+        ignore_categories = ignore_question_types
+    print(ignore_categories)
     print("data size", dialog_data.shape[0])
     for i in range(0, dialog_data.shape[0]):
         dialog_id = dialog_data["staff_dialog_id"][i]
@@ -45,7 +58,7 @@ def parse_data(file_name, contact_types=None, ignore_question_types=["无效会�
             #print("contact_type not")
             continue
         # 过滤不想要的siji类型（问题类型）
-        if ignore_question_types and (siji in ignore_question_types):
+        if ignore_categories and (siji in ignore_categories):
             #print("siji not")
             continue
         new_message = parse_message(message_content)
@@ -79,16 +92,17 @@ def get_model_input(data_info):
 
 
 if __name__ == '__main__':
-    #load_ignore_words()
+    load_ignore_words()
     #file_name = '/Users/srt/Downloads/dialog_text.xlsx'
-    file_name = '/data/code/github/machine_learn_msw/text_classify/fasttext/scikit-learn/dialog.xlsx'
+    file_name = cur_dir + '/dialog.xlsx'
     #parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"])
-    data_info = parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"])
+    data_info = parse_data(file_name, contact_types=[1], ignore_question_types=["无效会话"])
     model_input = get_model_input(data_info)
     train, test = split_train_test(model_input, 0.9)
     classifiers = get_classifiers(['NB', 'KNN', 'LR', 'RF', 'DT'])
     train_classifiers = train_classifiers(classifiers, train, test)
 
+    # fasttext
     #train_file = "./fasttext_train.txt"
     #test_file = "./fasttext_text.txt"
     #model_file = "./fasttext_model"
@@ -96,4 +110,3 @@ if __name__ == '__main__':
     #fasttext = fasttext_classifier(train_file, model_file)
     #fasttext_test(fasttext, test_file)
 
-    #classifiers_predict(train_classifiers, )
