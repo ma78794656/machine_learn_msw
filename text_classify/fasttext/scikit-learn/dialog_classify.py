@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import re
 import jieba
@@ -7,6 +8,7 @@ from os import path
 cur_dir = path.dirname(__file__)
 sys.path.append(cur_dir)
 from text_classifiers import *
+from text_processors import *
 
 
 ignore_words = []
@@ -31,7 +33,7 @@ def cut_message(message):
     return word_list
 
 
-def parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"], quantize=False):
+def parse_data(file_name, contact_types=None, ignore_question_types=[u"无效会话"], quantize=False):
     id_info = {}
     dialog_data = pd.read_excel(file_name, sheetname=0, header=0, index_col=None)
     # label 数值化处理
@@ -85,19 +87,62 @@ def get_model_input(data_info):
         label = val[0]
         message = val[2]
         features = cut_message(message)
+        if len(features) < 2:
+            continue
         features = dict([(w, True) for w in features])
         label_data.append([features, label])
-        #print([features, label])
     return label_data
 
 
+def get_model_input_nltk(data_info):
+    print('-'*20)
+    label_data_map = {}
+    #example: {'pos':[['aa','bb', 'cc'], ['dd','ee','ff']], 'neg':[['AA','BB', 'CC'], ['DD','EE','FF']]}
+    for val in data_info.values():
+        label = val[0]
+        features = cut_message(val[2])
+        if len(features) < 3:
+            continue
+        if label in label_data_map.keys():
+            label_data_map[label].append(features)
+        else:
+            label_data_map[label] = [features]
+
+    label_data = []
+    for key, val in label_data_map.items():
+        features = label_features(bigram_words, val, key, extract_ratio=0.5)
+        label_data.extend(features)
+
+    return label_data
+
+
+# data_info
+def get_nbest_words(data_info, ratio):
+    print('-'*20)
+    label_data_map = {}
+    # -> {'pos':[['aa','bb', 'cc'], ['dd','ee','ff']], 'neg':[['AA','BB', 'CC'], ['DD','EE','FF']]}
+    for val in data_info.values():
+        label = val[0]
+        features = cut_message(val[2])
+        if label in label_data_map.keys():
+            label_data_map[label].append(features)
+        else:
+            label_data_map[label] = [features]
+
+    word_scores = get_word_bigrams_scores(label_data_map, ratio=0.5)
+    best_words = find_best_words(word_scores, ratio)
+    return filter_with_nbest_words(label_data_map, best_words)
+
+
 if __name__ == '__main__':
-    load_ignore_words()
+    #load_ignore_words()
     #file_name = '/Users/srt/Downloads/dialog_text.xlsx'
     file_name = cur_dir + '/dialog.xlsx'
     #parse_data(file_name, contact_types=None, ignore_question_types=["无效会话"])
-    data_info = parse_data(file_name, contact_types=[1], ignore_question_types=["无效会话"])
-    model_input = get_model_input(data_info)
+    data_info = parse_data(file_name, contact_types=[1], ignore_question_types=[u"无效会话"])
+    #model_input = get_model_input(data_info)
+    #model_input = get_model_input_nltk(data_info)
+    model_input = get_nbest_words(data_info, 0.3)
     train, test = split_train_test(model_input, 0.9)
     classifiers = get_classifiers(['NB', 'KNN', 'LR', 'RF', 'DT'])
     train_classifiers = train_classifiers(classifiers, train, test)
