@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <meta charset="UTF-8">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
 </head>
 <body>
-$END$
+  <div id="app">
+    <el-button @click="visible = true">按钮</el-button>
+    <el-dialog v-model="visible" title="Hello world">
+      <p>欢迎使用 Element</p>
+    </el-dialog>
+  </div>
+
+
+<el-radio-group v-model="labelPosition" size="small">
+  <el-radio-button label="left">左对齐</el-radio-button>
+  <el-radio-button label="right">右对齐</el-radio-button>
+  <el-radio-button label="top">顶部对齐</el-radio-button>
+</el-radio-group>
+<div style="margin: 20px;"></div>
+<el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
+  <el-form-item label="名称">
+    <el-input v-model="formLabelAlign.name"></el-input>
+  </el-form-item>
+  <el-form-item label="活动区域">
+    <el-input v-model="formLabelAlign.region"></el-input>
+  </el-form-item>
+  <el-form-item label="活动形式">
+    <el-input v-model="formLabelAlign.type"></el-input>
+  </el-form-item>
+</el-form>
+<script>
+  export default {
+    data() {
+      return {
+        labelPosition: 'right',
+        formLabelAlign: {
+          name: '',
+          region: '',
+          type: ''
+        }
+      };
+    }
+  }
+</script>
+
+<template>
+  <el-radio class="radio" v-model="radio" label="1">备选项</el-radio>
+  <el-radio class="radio" v-model="radio" label="2">备选项</el-radio>
+</template>
+
 </body>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return { visible: false }
+      }
+    })
+  </script>
 </html>

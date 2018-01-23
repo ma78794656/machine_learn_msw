@@ -250,8 +250,8 @@ if __name__ == '__main__':
     #pos_features = get_pos_features(bigram, pos_review)
     #neg_features = get_neg_features(bigram, neg_review)
     # 3
-    #pos_features = get_pos_features(bigram_words, pos_review)
-    #neg_features = get_neg_features(bigram_words, neg_review)
+    pos_features = get_pos_features(bigram_words, pos_review)
+    neg_features = get_neg_features(bigram_words, neg_review)
     # 4
     #word_score = get_word_scores(pos_review, neg_review)
     #best_words = find_best_words(word_score, 1500)
@@ -297,10 +297,10 @@ if __name__ == '__main__':
     #    print 'NuSVC`s accuracy is %f' % score(NuSVC())
     #    print("done")
 
-    word_score = get_word_bigram_scores(pos_review, neg_review)
-    best_words = find_best_words(word_score, 2000)
-    pos_features = get_pos_features(best_word_features, pos_review)
-    neg_features = get_neg_features(best_word_features, neg_review)
+    #word_score = get_word_bigram_scores(pos_review, neg_review)
+    #best_words = find_best_words(word_score, 2000)
+    #pos_features = get_pos_features(best_word_features, pos_review)
+    #neg_features = get_neg_features(best_word_features, neg_review)
 
     train = pos_features[0:train_size] + neg_features[0:train_size]
     dev_test = pos_features[train_size:dev_test_size] + neg_features[train_size:dev_test_size]

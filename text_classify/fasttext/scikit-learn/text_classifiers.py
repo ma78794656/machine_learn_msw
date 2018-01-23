@@ -82,18 +82,34 @@ def svm_cross_validation(train):
     return clf
 
 
-def gen_train_test_file(data, train_file, test_file, train_size):
+def gen_train_test_file(data, train_file, test_file, train_size, has_bag=False):
     train_data, test_data = split_train_test(data, train_size)
+    if len([''.join(k) for k in data[0][0].keys() if isinstance(k, tuple)]) > 0:
+        has_bag = True
     with open(train_file, 'w', encoding='utf-8') as f:
         for info in train_data:
-            text = ' '.join(info[0].keys())
+            if has_bag:
+                kl = []
+                for k in info[0].keys():
+                    k = ''.join(k)
+                    kl.append(k)
+                text = ' '.join(kl)
+            else:
+                text = ' '.join(info[0].keys())
             label = info[1]
             label = "__label__" + str(label)
             f.write(label + "\t" + text + "\n")
 
     with open(test_file, 'w', encoding='utf-8') as f:
         for info in test_data:
-            text = ' '.join(info[0].keys())
+            if has_bag:
+                kl = []
+                for k in info[0].keys():
+                    k = ''.join(k)
+                    kl.append(k)
+                text = ' '.join(kl)
+            else:
+                text = ' '.join(info[0].keys())
             label = info[1]
             label = "__label__" + str(label)
             f.write(label + "\t" + text + "\n")
@@ -119,7 +135,7 @@ def fasttext_classifier(train_file, model_file):
 
 def fasttext_test(fasttext_classifier, test_file):
     result = fasttext_classifier.test(test_file)
-    print("set param")
+    print('******************* fasttext ********************')
     print('P@1:', result.precision)
     print('R@1:', result.recall)
     print('Number of examples:', result.nexamples)

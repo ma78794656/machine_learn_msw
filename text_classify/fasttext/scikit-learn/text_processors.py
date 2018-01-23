@@ -46,7 +46,7 @@ def bigram_words(words, ratio=0.3, use_fn=True, score_fn=BigramAssocMeasures.chi
 # 方法四：所有词作为特征，并计算其在所有语料中的信息量
 # words: 所有label及其words list， 如：
 # {'pos':[['aa','bb', 'cc'], ['dd','ee','ff']], 'neg':[['AA','BB', 'CC'], ['DD','EE','FF']]}
-def get_word_scores(label_words):
+def get_word_scores(label_words, ratio=1):
     label_words_freq = {}
     label_words_count = {}
     all_words_plain = []
