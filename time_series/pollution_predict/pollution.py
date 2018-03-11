@@ -1,14 +1,19 @@
 import pandas as pd
 from datetime import datetime
 import os
+from os import path
+import sys
 
 def parse(x):
     return datetime.strptime(x, "%Y %m %d %H")
 
 os.listdir(".")
 
+cur_dir = path.dirname(__file__)
+sys.path.append(cur_dir)
+
 # load data and format date
-dataset = pd.read_csv('/data/code/python/machinelearninginaction/mylearn/lstm/PRSA_data_2010.1.1-2014.12.31.csv',  parse_dates = [['year', 'month', 'day', 'hour']], index_col=0, date_parser=parse)
+dataset = pd.read_csv('./PRSA_data_2010.1.1-2014.12.31.csv',  parse_dates = [['year', 'month', 'day', 'hour']], index_col=0, date_parser=parse)
 dataset.head()
 
 # remove index column

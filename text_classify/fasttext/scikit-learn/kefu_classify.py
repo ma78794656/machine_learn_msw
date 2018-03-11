@@ -3,6 +3,8 @@ from os import path
 cur_dir = path.dirname(__file__)
 sys.path.append(cur_dir)
 from text_classifiers import *
+import re
+import pandas as pd
 
 
 def read_fasttext_data(data_file):

@@ -118,6 +118,7 @@ def get_model_input_nltk(data_info, words_bag):
             continue
         label_data.extend(features)
 
+    print(label_data[0])
     return label_data
 
 
@@ -147,7 +148,8 @@ if __name__ == '__main__':
     contact_type_list = [None, 1, 2]
     ignore_type_list = [None, u"无效会话"]
     load_ignore = [False, True]
-    process_type = ['no bag', 'bag(two)', 'bag(one+two)', 'no bag+nbest', 'bag(one+two)+nbest']
+    #process_type = ['no bag', 'bag(two)', 'bag(one+two)', 'no bag+nbest', 'bag(one+two)+nbest']
+    process_type = ['bag(one+two)']
     for load in load_ignore:
         if load:
             load_ignore_words()
